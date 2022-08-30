@@ -9,9 +9,13 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private float turnSpeed = 80.0f;
 
 
-    void Awake() {
+    private void Init() {
         tr = GetComponent<Transform>();
         anim = GetComponent<Animation>();
+    }
+
+    void Awake() {
+        Init();
     }
 
     void Start() {
@@ -23,7 +27,7 @@ public class PlayerController : MonoBehaviour {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         float mouseX = Input.GetAxis("Mouse X");
-
+        
         // 전후좌우 이동 방향 벡터 계산
         Vector3 moveDir = (Vector3.forward * vertical) + (Vector3.right * horizontal);
 
@@ -32,7 +36,7 @@ public class PlayerController : MonoBehaviour {
 
         // Vector3.up 축을 기준으로 turnSpeed만큼의 속도로 회전
         tr.Rotate(Vector3.up * turnSpeed * Time.deltaTime * mouseX);
-
+        
         // 주인공 캐릭터의 애니메이션 설정
         PlayerAnim(horizontal, vertical);
     }
