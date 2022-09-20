@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletRemove : MonoBehaviour {
     [SerializeField] private GameObject sparkEffect;
 
+    
 
     private void OnCollisionEnter(Collision other) {
         if (other.collider.CompareTag("Bullet")) {
@@ -12,7 +13,7 @@ public class BulletRemove : MonoBehaviour {
             Quaternion rot = Quaternion.LookRotation(-cp.normal);
             GameObject spark = Instantiate(sparkEffect, cp.point, rot);
 
-            Destroy(spark, 0.4f);
+            Destroy(spark, 0.2f);
             Destroy(other.gameObject);  // Bullet Destroy
         }
     }
