@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour {
     private Transform tr;
     private Animation anim;
     [SerializeField] private float moveSpeed = 10.0f;
-    [SerializeField] private float turnSpeed = 80.0f;
+    [SerializeField] private float turnSpeed = 200f;
 
 
     private void Init() {
@@ -18,9 +18,13 @@ public class PlayerController : MonoBehaviour {
         Init();
     }
 
-    void Start() {
+    IEnumerator Start() {
         // Idle 애니메이션 실행
         anim.Play("Idle");
+
+        turnSpeed = 0.0f;
+        yield return new WaitForSeconds(0.3f);
+        turnSpeed = 200.0f;
     }
 
     void Update() {
