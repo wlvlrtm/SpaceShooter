@@ -5,8 +5,14 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     private Transform tr;
     private Animation anim;
+    private readonly float initHp = 100.0f;
+    private float currHp;
+    
     [SerializeField] private float moveSpeed = 10.0f;
     [SerializeField] private float turnSpeed = 200f;
+
+    public delegate void PlayerDieHandler();
+    public static event PlayerDieHandler OnPlayerDie;
 
 
     private void Init() {
@@ -19,6 +25,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     IEnumerator Start() {
+        currHp = initHp;
+
         // Idle 애니메이션 실행
         anim.Play("Idle");
 
@@ -63,4 +71,29 @@ public class PlayerController : MonoBehaviour {
             anim.CrossFade("Idle", 0.25f);   // 정지 시 Idle 애니메이션 실행
         }
     }
+
+    private void PlayerDie() {
+        Debug.Log("Player Die!");
+
+        // GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+
+        // foreach(GameObject monster in monsters) {
+        //     monster.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
+        // }
+
+        OnPlayerDie();
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (currHp >= 0.0f && other.CompareTag("Punch")) {
+            currHp -= 10.0f;
+            Debug.Log($"Player hp = {currHp/initHp}");
+
+            if (currHp <= 0.0f) {
+                PlayerDie();
+            }
+        }
+    }
+
+
 }
