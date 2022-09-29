@@ -17,18 +17,30 @@ public class MonsterController : MonoBehaviour {
     private NavMeshAgent agent;
     private Animator animator;
     private GameObject bloodEffect;
+    private int hp = 100;
 
     private readonly int hashTrace = Animator.StringToHash("isTrace");
     private readonly int hashAttack = Animator.StringToHash("isAttack");
     private readonly int hashHit = Animator.StringToHash("Hit");
     private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
     private readonly int hashSpeed = Animator.StringToHash("Speed");
+    private readonly int hashDie = Animator.StringToHash("Die");
 
     [SerializeField] private State state = State.IDLE;
     [SerializeField] private float traceDist = 10.0f;
     [SerializeField] private float attackDist = 1.8f;
 
     public bool isDie = false;
+
+
+    private void OnEnable() {
+        PlayerController.OnPlayerDie += this.OnPlayerDie;
+    }
+
+
+    private void OnDisable() {
+        PlayerController.OnPlayerDie -= this.OnPlayerDie;
+    }
 
 
     private void Start() {
@@ -45,6 +57,10 @@ public class MonsterController : MonoBehaviour {
     IEnumerator CheckMonsterState() {
         while(!isDie) {
             yield return new WaitForSeconds(0.3f);
+
+            if (state == State.DIE) {
+                yield break;
+            }
 
             float distance = Vector3.Distance(playerTr.position, monstrerTr.position);
 
@@ -77,6 +93,10 @@ public class MonsterController : MonoBehaviour {
                     animator.SetBool(hashAttack, true);
                     break;
                 case State.DIE :
+                    isDie = true;
+                    agent.isStopped = true;
+                    animator.SetTrigger(hashDie);
+                    GetComponent<CapsuleCollider>().enabled = false;
                     break;
             }
 
@@ -120,6 +140,12 @@ public class MonsterController : MonoBehaviour {
             Vector3 pos = other.GetContact(0).point;
             Quaternion rot = Quaternion.LookRotation(-other.GetContact(0).normal);
             ShowBloodEffect(pos, rot);
+
+            this.hp -= 10;
+
+            if (this.hp <= 0) {
+                state = State.DIE;
+            }
         }
     }
 }

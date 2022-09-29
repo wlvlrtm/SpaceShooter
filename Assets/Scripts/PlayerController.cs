@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+
     private void PlayerDie() {
         Debug.Log("Player Die!");
 
@@ -83,6 +84,7 @@ public class PlayerController : MonoBehaviour {
 
         OnPlayerDie();
     }
+
 
     private void OnTriggerEnter(Collider other) {
         if (currHp >= 0.0f && other.CompareTag("Punch")) {
