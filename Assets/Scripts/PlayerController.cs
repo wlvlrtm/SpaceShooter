@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class PlayerController : MonoBehaviour {
     private Transform tr;
     private Animation anim;
     private readonly float initHp = 100.0f;
     private float currHp;
+    private Image hpBar;
     
     [SerializeField] private float moveSpeed = 10.0f;
     [SerializeField] private float turnSpeed = 200f;
@@ -25,6 +28,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     IEnumerator Start() {
+        hpBar = GameObject.FindGameObjectWithTag("HP_Bar")?.GetComponent<Image>();
         currHp = initHp;
 
         // Idle 애니메이션 실행
@@ -86,9 +90,15 @@ public class PlayerController : MonoBehaviour {
     }
 
 
+    private void DisplayHealth() {
+        hpBar.fillAmount = currHp/initHp;
+    }
+
+
     private void OnTriggerEnter(Collider other) {
         if (currHp >= 0.0f && other.CompareTag("Punch")) {
             currHp -= 10.0f;
+            DisplayHealth();
             Debug.Log($"Player hp = {currHp/initHp}");
 
             if (currHp <= 0.0f) {
@@ -96,6 +106,4 @@ public class PlayerController : MonoBehaviour {
             }
         }
     }
-
-
 }
