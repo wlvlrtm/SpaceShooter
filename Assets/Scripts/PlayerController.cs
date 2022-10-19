@@ -87,6 +87,7 @@ public class PlayerController : MonoBehaviour {
         // }
 
         OnPlayerDie();
+        GameManager.instance.IsGameOver = true;    
     }
 
 
