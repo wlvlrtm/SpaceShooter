@@ -49,9 +49,19 @@ public class MonsterController : MonoBehaviour {
         monstrerTr = GetComponent<Transform>();
         playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
         agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
         animator = GetComponent<Animator>();
         bloodEffect = Resources.Load<GameObject>("_EffectExamples/Blood/Prefabs/BloodSprayEffect");
     }
+
+    private void Update() {
+        if (agent.remainingDistance >= 2.0f) {
+            Vector3 direction = agent.desiredVelocity;
+            Quaternion rot = Quaternion.LookRotation(direction);
+            monstrerTr.rotation = Quaternion.Slerp(monstrerTr.rotation, rot, Time.deltaTime * 10.0f);
+        }
+    }
+
 
     IEnumerator CheckMonsterState() {
         while(!isDie) {
@@ -140,18 +150,19 @@ public class MonsterController : MonoBehaviour {
     private void OnCollisionEnter(Collision other) {
         if (other.collider.CompareTag("Bullet")) {
             Destroy(other.gameObject);
-            animator.SetTrigger(hashHit);
-            
-            Vector3 pos = other.GetContact(0).point;
-            Quaternion rot = Quaternion.LookRotation(-other.GetContact(0).normal);
-            ShowBloodEffect(pos, rot);
+        }
+    }
 
-            this.hp -= 10;
+    public void OnDamage(Vector3 pos, Vector3 normal) {
+        animator.SetTrigger(hashHit);
+        Quaternion rot = Quaternion.LookRotation(normal);
+        ShowBloodEffect(pos, rot);
 
-            if (this.hp <= 0) {
-                state = State.DIE;
-                GameManager.instance.DisplayScore(50);
-            }
+        this.hp -= 10;
+
+        if (this.hp <= 0) {
+            state = State.DIE;
+            GameManager.instance.DisplayScore(50);
         }
     }
 }
